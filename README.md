@@ -3,9 +3,10 @@ Free Bot Alt Yapı
 
 Öncelikle config.json dosyasının içindeki bilgileri doldurun
 
---------------------------
 
 sırası ile bot terminalini açıp;
+--------------------------
+
 
 
 npm install discord.js
@@ -18,7 +19,7 @@ npm install moment
 
 npm install moment-duration-format
 
-komutlarını girin
+
 --------------------------
 
 ve ardından "node ." yazarak botu çalıştırabilirsiniz.
