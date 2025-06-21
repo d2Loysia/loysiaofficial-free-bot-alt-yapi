@@ -18,6 +18,8 @@ npm install croxydb
 npm install moment
 
 npm install moment-duration-format
+komutlarını girin
+
 
 
 --------------------------
