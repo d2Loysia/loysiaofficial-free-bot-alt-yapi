@@ -1,6 +1,10 @@
 # loysiaofficial-free-bot-alt-yapi
 Free Bot Alt Yapı
 
+
+Sakın gidip database deki level.db nin ismini değiştirmeyin. Level sistemi çalışmaz bilginiz olsun !
+
+
 Öncelikle config.json dosyasının içindeki bilgileri doldurun
 
 
