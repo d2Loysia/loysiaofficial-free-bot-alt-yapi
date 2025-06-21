@@ -1,0 +1,19 @@
+{
+  "name": "loysia-freebot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "croxydb": "^0.0.26",
+    "discord.js": "^14.20.0",
+    "moment": "^2.30.1",
+    "moment-duration-format": "^2.3.2",
+    "sqlite3": "^5.1.7"
+  }
+}
