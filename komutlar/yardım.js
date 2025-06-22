@@ -18,13 +18,19 @@ module.exports = {
         '`/level` - Seviyeni gösterir',
       ],
       Moderasyon: [
-        '`/kick` - Kullanıcıyı atar',
-        '`/ban` - Kullanıcıyı yasaklar',
-        '`/kilit` - Kanalı kilitler veya açar',
-        '`/yavaş-mod` - Yavaş mod süresi ayarlanır',
-        '`/tepki-rol` - Emojiye tıklayanlara rol verir',
-        '`/rol-ver/al` - Rol verir veya alır',
-        '`/hg-bb` - Yakında çalışacak...',
+        '`/kick` - Kullanıcıyı atar.',
+        '`/ban` - Kullanıcıyı yasaklar.',
+        '`/unban` - Kullanıcının yasağını kaldırır.',
+        '`/mute` - Kullanıcıyı susturur.',
+        '`/unmute` - Kullanıcının susturmasını kaldırır.',
+        '`/kilit` - Kanalı kilitler veya açar.',
+        '`/yavaş-mod` - Yavaş mod süresi ayarlanır.',
+        '`/tepki-rol` - Emojiye tıklayanlara rol verir.',
+        '`/rol-ver/al` - Rol verir veya alır.',
+        '`/hg-bb` - Karşılama ve Veda mesajı kanalı ayarla.',
+        '`/captcha` - Doğrulama sistemi kurulumu yapar.',
+        '`/komut-oluştur` - Kendi özel komutunu oluştur.',
+        '`/sil` - Belirtilen sayı kadar mesaj siler.',
       ]
     };
 

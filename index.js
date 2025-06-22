@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, REST, Routes, EmbedBuilder } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 const { token, clientId, guildId } = require('./config.json');
 const db2 = require('croxydb');
@@ -41,6 +41,19 @@ db.run(`CREATE TABLE IF NOT EXISTS levels (
 db.run(`CREATE TABLE IF NOT EXISTS hg_bb (
   guildId TEXT PRIMARY KEY,
   channelId TEXT NOT NULL
+)`);
+
+db.run(`CREATE TABLE IF NOT EXISTS captcha_settings (
+  guildId TEXT PRIMARY KEY,
+  channelId TEXT NOT NULL,
+  roleId TEXT NOT NULL
+)`);
+
+db.run(`CREATE TABLE IF NOT EXISTS custom_commands (
+  guildId TEXT,
+  trigger TEXT,
+  response TEXT,
+  PRIMARY KEY (guildId, trigger)
 )`);
 
 client.db = db;
@@ -135,16 +148,13 @@ client.on('guildMemberAdd', async member => {
     if (!kanal) kanal = await member.guild.channels.fetch(row.channelId).catch(() => null);
     if (!kanal) return console.warn(`Kanal bulunamadı: ${row.channelId}`);
 
-    const createdAt = moment(member.user.createdAt);
-    const now = moment();
-    const duration = moment.duration(now.diff(createdAt)).humanize();
-
+    const timestamp = Math.floor(member.user.createdTimestamp / 1000); // UNIX timestamp (saniye)
+    
     const mesaj = `👋 **${member.guild.name}** sunucusuna hoş geldin ${member} 🎉
 Seninle birlikte tam **${member.guild.memberCount}** kişiyiz!
 Sunucumuzda güzel vakit geçirmen dileğiyle. İyi günler 🤝
 
-📅 Hesap oluşturulma tarihi: ${createdAt.format("DD.MM.YYYY HH:mm")} (${duration} önce)
-`;
+📅 Hesap oluşturulma tarihi: <t:${timestamp}:R> (<t:${timestamp}:f>)`;
 
     try {
       await kanal.send({ content: mesaj });
@@ -176,5 +186,66 @@ Umarız tekrar görüşürüz. 👋`;
   });
 });
 
+
+client.on('interactionCreate', async interaction => {
+  if (interaction.isButton() && interaction.customId === 'verify') {
+    const db = client.db;
+    db.get(`SELECT roleId FROM captcha_settings WHERE guildId = ?`, [interaction.guild.id], async (err, row) => {
+      if (err || !row) {
+        return interaction.reply({ content: '⚠️ Doğrulama sistemi ayarlanmamış.', ephemeral: true });
+      }
+
+      const rol = interaction.guild.roles.cache.get(row.roleId);
+      const member = interaction.guild.members.cache.get(interaction.user.id);
+
+      if (!rol || !member) return;
+
+      if (member.roles.cache.has(rol.id)) {
+        return interaction.reply({ content: '✅ Zaten doğrulandınız.', ephemeral: true });
+      }
+
+      await member.roles.add(rol).catch(console.error);
+      await interaction.reply({ content: '🎉 Başarıyla doğrulandınız, artık sunucuya erişebilirsiniz!', ephemeral: true });
+    });
+  }
+});
+
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isModalSubmit()) return;
+  if (interaction.customId !== 'komut_olustur') return;
+
+  const tetikleyici = interaction.fields.getTextInputValue('tetikleyici');
+  const yanit = interaction.fields.getTextInputValue('yanit');
+  const guildId = interaction.guild.id;
+
+  client.db.run(
+    `INSERT INTO custom_commands (guildId, trigger, response) VALUES (?, ?, ?)
+     ON CONFLICT(guildId, trigger) DO UPDATE SET response = excluded.response`,
+    [guildId, tetikleyici, yanit],
+    (err) => {
+      if (err) {
+        console.error(err);
+        return interaction.reply({ content: '❌ Veritabanı hatası.', ephemeral: true });
+      }
+      interaction.reply({ content: `✅ \`${tetikleyici}\` komutu başarıyla oluşturuldu!`, ephemeral: true });
+    }
+  );
+});
+
+client.on('messageCreate', async (message) => {
+  if (message.author.bot || !message.guild) return;
+
+  const guildId = message.guild.id;
+  const content = message.content.trim();
+
+  client.db.get(
+    `SELECT response FROM custom_commands WHERE guildId = ? AND trigger = ?`,
+    [guildId, content],
+    (err, row) => {
+      if (err) return console.error(err);
+      if (row) message.channel.send(row.response);
+    }
+  );
+});
 
 client.login(token);
