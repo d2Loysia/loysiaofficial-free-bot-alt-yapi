@@ -16,6 +16,9 @@ module.exports = {
     const kategoriler = {
       Genel: [
         '`/level` - Seviyeni gösterir',
+        '`/kullanıcı-bilgi` - Belirtilen kullanıcının bilgilerini gösterir.',
+        '`/sunucu-bilgi` - Sunucunun bilgilerini gösterir.',
+        '`/avatar` - Etiketlenen kullanıcının avatarını gösterir.',
       ],
       Moderasyon: [
         '`/kick` - Kullanıcıyı atar.',
@@ -31,11 +34,13 @@ module.exports = {
         '`/captcha` - Doğrulama sistemi kurulumu yapar.',
         '`/komut-oluştur` - Kendi özel komutunu oluştur.',
         '`/sil` - Belirtilen sayı kadar mesaj siler.',
+        '`/emo-rol` - Belirtilen mesaj ID\'sine ✅ emojisi ekler ve tepki verenlere rol verir.',
+        '`/çekiliş-başlat` - Yeni bir çekiliş başlatır',
       ]
     };
 
     const mainEmbed = new EmbedBuilder()
-      .setTitle('📘 Yardım Menüsü')
+      .setTitle('📘 Loysia Free Bot Altyapısı Yardım Menüsü')
       .setDescription('Lütfen aşağıdaki kategorilerden birini seçin:')
       .setColor('Blue');
 

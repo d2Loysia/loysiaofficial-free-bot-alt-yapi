@@ -8,6 +8,7 @@ const moment = require('moment');
 require('moment-duration-format');
 moment.locale('tr');
 
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -247,5 +248,14 @@ client.on('messageCreate', async (message) => {
     }
   );
 });
+
+client.on("guildMemberAdd", member => {
+    const rol = db.get(`otorol_${member.guild.id}`)
+    if (!rol) return;
+    member.roles.add(rol).catch(() => { })
+})
+
+client.on('interactionCreate', require('./events/interactionCreate'));
+
 
 client.login(token);

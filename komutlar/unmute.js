@@ -3,32 +3,32 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('unmute')
-    .setDescription('Bir kullanıcının susturmasını kaldırır.')
+    .setDescription('Bir kullanıcının zaman aşımı (mute) cezasını kaldırır.')
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-    .addUserOption(option => 
+    .addUserOption(option =>
       option.setName('kullanici')
         .setDescription('Susturması kaldırılacak kullanıcı')
-        .setRequired(true)),
+        .setRequired(true)
+    ),
 
   async execute(interaction) {
     const user = interaction.options.getUser('kullanici');
-    const guild = interaction.guild;
-    const member = guild.members.cache.get(user.id);
+    const member = interaction.guild.members.cache.get(user.id);
 
-    if (!member) return interaction.reply({ content: 'Kullanıcı bulunamadı.', ephemeral: true });
+    if (!member) {
+      return interaction.reply({ content: '❌ Kullanıcı bulunamadı.', ephemeral: true });
+    }
 
-    const muteRoleId = 'MUTE_ROL_ID';
-
-    if (!member.roles.cache.has(muteRoleId)) {
-      return interaction.reply({ content: 'Bu kullanıcı susturulmamış.', ephemeral: true });
+    if (!member.communicationDisabledUntil) {
+      return interaction.reply({ content: '❌ Bu kullanıcı zaman aşımında değil.', ephemeral: true });
     }
 
     try {
-      await member.roles.remove(muteRoleId);
-      interaction.reply({ content: `${user.tag} susturması kaldırıldı.`, ephemeral: false });
+      await member.timeout(null, 'Zaman aşımı kaldırıldı');
+      await interaction.reply({ content: `✅ ${user.tag} kullanıcısının susturması kaldırıldı.` });
     } catch (error) {
-      interaction.reply({ content: 'Unmute işlemi sırasında hata oluştu.', ephemeral: true });
       console.error(error);
+      await interaction.reply({ content: '❌ Susturma kaldırılırken bir hata oluştu.', ephemeral: true });
     }
   }
 };
